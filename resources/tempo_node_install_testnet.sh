@@ -1,0 +1,113 @@
+#!/bin/bash
+
+set -e
+
+# ==== CONFIG ====
+echo -e "\n--- Tempo Testnet Node Setup ---"
+
+LOGO="
+ __                                   
+/__ ._ _. ._   _|   \  / _. | |  _    
+\_| | (_| | | (_|    \/ (_| | | (/_ \/
+                                    /
+"
+
+echo "$LOGO"
+
+# Prompt for MONIKER and TEMPO_PORT
+read -p "Enter your moniker: " MONIKER
+read -p "Enter your preferred port number: (leave empty to use default: 30) " TEMPO_PORT
+if [ -z "$TEMPO_PORT" ]; then
+    TEMPO_PORT=30
+fi
+
+# Stop and remove existing Tempo node
+sudo systemctl daemon-reload
+sudo systemctl stop tempo 2>/dev/null || true
+sudo systemctl disable tempo 2>/dev/null || true
+sudo rm -rf /etc/systemd/system/tempo.service 2>/dev/null || true
+sudo rm -rf $HOME/.tempo 2>/dev/null || true
+sed -i "/TEMPO_/d" $HOME/.bash_profile 2>/dev/null || true
+
+# 1. Install dependencies
+sudo apt update -y && sudo apt upgrade -y
+sudo apt install -y curl git jq build-essential gcc unzip wget lz4 openssl libssl-dev pkg-config protobuf-compiler clang cmake llvm llvm-dev
+
+# 2. Set environment variables
+touch "$HOME/.bash_profile"
+export MONIKER=$MONIKER
+export TEMPO_CHAIN_ID="andantino"
+export TEMPO_PORT=$TEMPO_PORT
+export TEMPO_HOME="$HOME/.tempo"
+
+echo "export MONIKER=\"$MONIKER\"" >> $HOME/.bash_profile
+echo "export TEMPO_CHAIN_ID=\"andantino\"" >> $HOME/.bash_profile
+echo "export TEMPO_PORT=\"$TEMPO_PORT\"" >> $HOME/.bash_profile
+echo "export TEMPO_HOME=\"$HOME/.tempo\"" >> $HOME/.bash_profile
+echo "export PATH=\$PATH:$HOME/.tempo/bin" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+
+# 3. Install Tempo binary
+curl -L https://tempo.xyz/install | bash
+
+touch ~/.bash_profile
+if [ -f ~/.bashrc ]; then
+  grep -E "tempo|Tempo|\\.tempo" ~/.bashrc >> ~/.bash_profile || true
+  sed -i.bak '/tempo\|Tempo\|\.tempo/d' ~/.bashrc
+fi
+
+source ~/.bash_profile
+tempo --version
+
+# 4. Create data directory and download snapshot
+mkdir -p "$TEMPO_HOME/data"
+tempo download
+
+# 5. Create systemd service file
+sudo tee /etc/systemd/system/tempo.service > /dev/null <<EOF
+[Unit]
+Description=Tempo Node (Reth stack)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=${USER}
+WorkingDirectory=${HOME}/.tempo
+Environment=RUST_LOG=info
+ExecStart=${HOME}/.tempo/bin/tempo node \
+  --datadir ${HOME}/.tempo/data \
+  --follow \
+  --port ${TEMPO_PORT}303 \
+  --discovery.addr 0.0.0.0 \
+  --discovery.port ${TEMPO_PORT}303 \
+  --http \
+  --http.addr 0.0.0.0 \
+  --http.port ${TEMPO_PORT}545 \
+  --http.api eth,net,web3,txpool,trace \
+  --metrics ${TEMPO_PORT}900
+StandardOutput=journal
+StandardError=journal
+Restart=always
+RestartSec=10
+SyslogIdentifier=tempo
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 6. Start the node
+sudo systemctl daemon-reload
+sudo systemctl enable tempo
+sudo systemctl restart tempo
+
+# 7. Confirmation message for installation completion
+if systemctl is-active --quiet tempo; then
+    echo "Tempo node installation and service started successfully!"
+else
+    echo "Tempo node installation failed. Please check the logs for more information."
+fi
+
+# show the full logs
+echo "sudo journalctl -u tempo -fn 100"

@@ -93,7 +93,6 @@ function ensure_bash_profile() {
 }
 
 function deploy_tempo_node() {
-  function deploy_validator_node() {
     clear
     echo -e "${RED}▓▒░ IMPORTANT DISCLAIMER AND TERMS ░▒▓${RESET}"
     echo -e "${YELLOW}1. SECURITY:${RESET}"
@@ -146,7 +145,6 @@ function deploy_tempo_node() {
     
     bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Valley-of-Tempo-Testnet/main/resources/tempo_node_install_testnet.sh)
     menu
-  }
 }
 
 function show_logs() {

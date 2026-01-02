@@ -218,8 +218,8 @@ function menu() {
     echo "   a. Restart Tempo node"
     echo "   b. Stop Tempo node"
     echo "   c. Delete Tempo Node"
-    echo -e "${GREEN}3. Show Endpoints${RESET}"
-    echo -e "${GREEN}4. Guidelines${RESET}"
+    echo -e "${GREEN}3. Show Grand Valley's Endpoints${RESET}"
+    echo -e "${GREEN}4. Show Guidelines${RESET}"
     echo -e "${RED}5. Exit${RESET}"
 
     read -p "Choose an option (e.g., 1a or 1 then a): " OPTION

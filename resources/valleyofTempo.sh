@@ -43,8 +43,9 @@ ${YELLOW}| Category  | Requirements     |
 - service file name: ${CYAN}tempo.service${RESET}
 - current chain: ${CYAN}andantino (Tempo Testnet)${RESET}
 - current chain ID: ${CYAN}42429${RESET}
-- current tempo binary version: ${CYAN}0.7.5${RESET}
-- Build Timestamp: ${CYAN}2025-12-15T16:14:58.647380962Z${RESET}
+- current tempo binary version: ${CYAN}0.8.0${RESET}
+- Commit SHA: 6318f1a6258d0487c761955e4178ea3897008334
+- Build Timestamp: ${CYAN}2025-12-22T14:41:02.631694792Z${RESET}
 - Build Features: ${CYAN}asm_keccak,default,jemalloc,otlp${RESET}
 - Build Profile: ${CYAN}maxperf${RESET}
 "

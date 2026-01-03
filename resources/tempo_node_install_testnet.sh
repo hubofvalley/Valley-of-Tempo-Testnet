@@ -20,6 +20,7 @@ read -p "Enter your preferred port number: (leave empty to use default: 30) " TE
 if [ -z "$TEMPO_PORT" ]; then
     TEMPO_PORT=30
 fi
+read -p "Configure UFW firewall rules for Tempo? (y/n): " SETUP_UFW
 
 # Stop and remove existing Tempo node
 sudo systemctl daemon-reload
@@ -48,7 +49,6 @@ echo "export PATH=\$PATH:$HOME/.tempo/bin" >> $HOME/.bash_profile
 source $HOME/.bash_profile
 
 # Optional: Configure UFW based on chosen ports
-read -p "Configure UFW firewall rules for Tempo? (y/n): " SETUP_UFW
 if [[ "$SETUP_UFW" =~ ^[Yy]$ ]]; then
     sudo apt install -y ufw
     sudo ufw allow ssh

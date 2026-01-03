@@ -101,32 +101,33 @@ Wants=network.target
 
 [Service]
 Type=simple
-User=${USER}
-WorkingDirectory=${HOME}/.tempo
+User=$USER
+Group=$USER
 Environment=RUST_LOG=info
-ExecStart=${HOME}/.tempo/bin/tempo node \
-  --datadir ${HOME}/.tempo/data \
+WorkingDirectory=$HOME/.tempo
+ExecStart=$HOME/.tempo/bin/tempo node \
+  --datadir $HOME/.tempo/data \
   --follow \
   --port ${TEMPO_PORT}303 \
   --discovery.addr 0.0.0.0 \
   --discovery.port ${TEMPO_PORT}303 \
   --http \
-  --http.addr 127.0.0.1 \
+  --http.addr 0.0.0.0 \
   --http.port ${TEMPO_PORT}545 \
   --http.api eth,net,web3,txpool,trace \
-  --ws.addr 127.0.0.1 \
-  --ws.port ${TEMPO_PORT}546 \
-  --metrics ${TEMPO_PORT}900
-  --full \
+  --metrics ${TEMPO_PORT}900 \
+  -full \
   --prune.block-interval 5000 \
   --prune.sender-recovery.full \
-  --prune.receipts.distance 200000 \
-  --prune.account-history.distance 200000 \
-  --prune.storage-history.distance 200000
-StandardOutput=journal
-StandardError=journal
+  --prune.transaction-lookup.full \
+  --prune.receipts.full \
+  --prune.account-history.distance 10064 \
+  --prune.storage-history.distance 10064 \
+  --prune.bodies.distance 10064
 Restart=always
 RestartSec=10
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=tempo
 LimitNOFILE=infinity
 

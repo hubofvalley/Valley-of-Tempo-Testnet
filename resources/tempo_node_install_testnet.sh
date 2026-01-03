@@ -117,6 +117,12 @@ ExecStart=${HOME}/.tempo/bin/tempo node \
   --ws.addr 127.0.0.1 \
   --ws.port ${TEMPO_PORT}546 \
   --metrics ${TEMPO_PORT}900
+  --full \
+  --prune.block-interval 5000 \
+  --prune.sender-recovery.full \
+  --prune.receipts.distance 200000 \
+  --prune.account-history.distance 200000 \
+  --prune.storage-history.distance 200000
 StandardOutput=journal
 StandardError=journal
 Restart=always

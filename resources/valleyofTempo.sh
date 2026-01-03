@@ -162,21 +162,25 @@ function deploy_tempo_node() {
 
 function show_logs() {
   sudo journalctl -u tempo -fn 100 -o cat
+  menu
 }
 
 function show_status() {
   sudo systemctl status tempo
+  menu
 }
 
 function restart_tempo() {
   sudo systemctl daemon-reload
   sudo systemctl restart tempo
   echo -e "${GREEN}tempo.service restarted.${RESET}"
+  menu
 }
 
 function stop_tempo() {
   sudo systemctl stop tempo
   echo -e "${YELLOW}tempo.service stopped.${RESET}"
+  menu
 }
 
 function delete_tempo_node() {
@@ -188,6 +192,7 @@ function delete_tempo_node() {
   sed -i "/TEMPO_/d" "$HOME/.bash_profile"
   sed -i "/\\.tempo/d" "$HOME/.bash_profile"
   echo -e "${RED}Tempo node deleted. Remember to clean up any keys you backed up elsewhere.${RESET}"
+  menu
 }
 
 function install_tempo_app() {
@@ -216,10 +221,12 @@ function install_tempo_app() {
 
 function apply_snapshot() {
   tempo download
+  menu
 }
 
 function show_endpoints() {
   echo -e "$ENDPOINTS"
+  menu
 }
 
 function show_guidelines() {
@@ -231,6 +238,7 @@ function show_guidelines() {
   echo " - Check logs and status after deploy."
   echo " - Backup any keys you generate with the Tempo CLI."
   echo " - Run 'source ~/.bash_profile' after exiting to refresh env vars."
+  menu
 }
 
 # Menu function

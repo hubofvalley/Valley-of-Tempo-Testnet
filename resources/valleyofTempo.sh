@@ -235,7 +235,6 @@ function show_guidelines() {
 
 # Menu function
 function menu() {
-    while true; do
     realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
     echo -e "${ORANGE}Valley of Tempo Testnet${RESET}"
     echo "Main Menu:"
@@ -253,7 +252,6 @@ function menu() {
     echo -e "${GREEN}5. Show Guidelines${RESET}"
     echo -e "${RED}6. Exit${RESET}"
 
-    read -p "Choose an option (e.g., 1a or 1 then a): " OPTION
     echo -e "Latest Block Height: ${GREEN}$realtime_block_height${RESET}"
     echo -e "\n${YELLOW}Please run the following command to apply the changes after exiting the script:${RESET}"
     echo -e "${GREEN}source ~/.bash_profile${RESET}"
@@ -262,7 +260,7 @@ function menu() {
     echo -e "${GREEN}Let's Buidl Tempo Together - Grand Valley${RESET}"
     read -p "Choose an option (e.g., 1a or 1 then a): " OPTION
 
-    if [[ $OPTION =~ ^[1-4][a-z]$ ]]; then
+    if [[ $OPTION =~ ^[1-6][a-z]$ ]]; then
       MAIN_OPTION=${OPTION:0:1}
       SUB_OPTION=${OPTION:1:1}
     else
@@ -295,8 +293,7 @@ function menu() {
       5) show_guidelines;;
       6) exit 0 ;;
       *) echo "Invalid option. Please try again.";;
-    esac
-  done
+    esac 
 }
 
 menu

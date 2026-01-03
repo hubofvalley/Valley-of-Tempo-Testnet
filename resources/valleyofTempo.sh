@@ -235,6 +235,7 @@ function show_guidelines() {
 
 # Menu function
 function menu() {
+    while true; do
     realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
     echo -e "${ORANGE}Valley of Tempo Testnet${RESET}"
     echo "Main Menu:"

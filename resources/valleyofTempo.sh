@@ -22,7 +22,11 @@ LOGO="
  | |_) | |_| |         |___/                                  |_|          
  |_.__/ \__, |                                                             
          __/ |                                                             
-        |___/                                                              
+        |___/    
+ __
+/__ __ __ __   _|   \  / __ | |  _
+\_| | (_| | | (_|    \/ (_| | | (/_ \/
+                                    /                                                          
 "
 
 INTRO="
@@ -69,18 +73,29 @@ ${GREEN}Contact${RESET}
 
 ENDPOINTS="${GREEN}
 Grand Valley Tempo public endpoints:${RESET}
-- cosmos-rpc: ${BLUE}https://lightnode-rpc-tempo.grandvalleys.com${RESET}
 - evm-rpc: ${BLUE}https://lightnode-json-rpc-tempo.grandvalleys.com${RESET}
-- cosmos rest-api: ${BLUE}https://lightnode-api-tempo.grandvalleys.com${RESET}
 - cosmos ws: ${BLUE}wss://lightnode-rpc-tempo.grandvalleys.com/websocket${RESET}
 - evm ws: ${BLUE}wss://lightnode-wss-tempo.grandvalleys.com${RESET}
 - peer: ${BLUE}fffb1a0dc2b6af331c65328c1ed9afad0bf107de@peer-tempo.grandvalleys.com:37656${RESET}
 "
 
-function pause() {
-  echo -e "\n${YELLOW}Press Enter to continue...${RESET}"
-  read -r
-}
+# Display LOGO and wait for user input to continue
+echo -e "$LOGO"
+echo -e "$PRIVACY_SAFETY_STATEMENT"
+echo -e "\n${YELLOW}Press Enter to continue...${RESET}"
+read -r
+
+# Display INTRO section and wait for user input to continue
+echo -e "$INTRO"
+echo -e "$ENDPOINTS"
+echo -e "\n${YELLOW}Press Enter to continue${RESET}"
+read -r
+echo "export TEMPO_CHAIN_ID=\"andantino\"" >> $HOME/.bash_profile
+echo "export TEMPO_PORT=\"$TEMPO_PORT\"" >> $HOME/.bash_profile
+echo "export TEMPO_HOME=\"$HOME/.tempo\"" >> $HOME/.bash_profile
+echo "export PATH=\$PATH:$HOME/.tempo/bin" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+source $HOME/.bash_profile
 
 function ensure_bash_profile() {
   touch "$HOME/.bash_profile"
@@ -109,8 +124,6 @@ function deploy_tempo_node() {
     
     echo -e "\n${GREEN}Port Configuration:${RESET}"
     echo -e "Ports will be adjusted based on your input (example if you enter 38):"
-    echo -e "  • ${CYAN}37657${RESET} (RPC) <-- 26657"
-    echo -e "  • ${CYAN}37656${RESET} (P2P) <-- 26656"
     echo -e "  • ${CYAN}38545${RESET} (EVM-RPC) <-- 8545"
     echo -e "  • ${CYAN}38546${RESET} (WebSocket) <-- 8546"
     
@@ -118,7 +131,7 @@ function deploy_tempo_node() {
     echo -e "  • ${CYAN}$HOME/.tempo${RESET}"
 
     echo -e "\n${YELLOW}3. REQUIREMENTS:${RESET}"
-    echo "- CPU: 8+ cores, RAM: 32+ GB, Storage: 1TB+ NVMe SSD"
+    echo "- CPU: 16+ cores, RAM: 32+ GB, Storage: 1TB+ NVMe SSD"
     echo "- Ubuntu 22.04/24.04 recommended"
 
     echo -e "\n${YELLOW}4. VALIDATOR RESPONSIBILITIES:${RESET}"
@@ -177,6 +190,30 @@ function delete_tempo_node() {
   echo -e "${RED}Tempo node deleted. Remember to clean up any keys you backed up elsewhere.${RESET}"
 }
 
+function install_tempo_app() {
+    curl -L https://tempo.xyz/install | bash
+    touch ~/.bash_profile
+    if [ -f ~/.bashrc ]; then
+        grep -E "tempo|Tempo|\\.tempo" ~/.bashrc >> ~/.bash_profile || true
+        sed -i.bak '/tempo\|Tempo\|\.tempo/d' ~/.bashrc
+    fi
+    curl -L https://foundry.paradigm.xyz | bash
+    if [ -f ~/.bashrc ]; then
+        grep -E "foundry|Foundry|\\.foundry" ~/.bashrc >> ~/.bash_profile || true
+        sed -i.bak '/foundry\|Foundry\|\.foundry/d' ~/.bashrc
+    fi
+    if ! grep -q ".foundry/bin" ~/.bash_profile; then
+        echo 'export PATH="$HOME/.foundry/bin:$PATH"' >> ~/.bash_profile
+    fi
+    source ~/.bash_profile
+    ~/.foundry/bin/foundryup
+    source ~/.bash_profile
+    tempo --version
+    cast --version
+    echo -e "${YELLOW}tempo app installed successfully${RESET}"
+    menu
+}
+
 function apply_snapshot() {
   tempo download
 }
@@ -196,15 +233,9 @@ function show_guidelines() {
   echo " - Run 'source ~/.bash_profile' after exiting to refresh env vars."
 }
 
+# Menu function
 function menu() {
-  echo -e "$LOGO"
-  echo -e "$PRIVACY_SAFETY_STATEMENT"
-  pause
-  echo -e "$INTRO"
-  echo -e "$ENDPOINTS"
-  pause
-
-  while true; do
+    realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
     echo -e "${ORANGE}Valley of Tempo Testnet${RESET}"
     echo "Main Menu:"
     echo -e "${GREEN}1. Node Interactions:${RESET}"
@@ -216,10 +247,18 @@ function menu() {
     echo "   a. Restart Tempo node"
     echo "   b. Stop Tempo node"
     echo "   c. Delete Tempo Node"
-    echo -e "${GREEN}3. Show Grand Valley's Endpoints${RESET}"
-    echo -e "${GREEN}4. Show Guidelines${RESET}"
-    echo -e "${RED}5. Exit${RESET}"
+    echo -e "${GREEN}3. Install the Tempo App only to execute transactions without running a node${RESET}"
+    echo -e "${GREEN}4. Show Grand Valley's Endpoints${RESET}"
+    echo -e "${GREEN}5. Show Guidelines${RESET}"
+    echo -e "${RED}6. Exit${RESET}"
 
+    read -p "Choose an option (e.g., 1a or 1 then a): " OPTION
+    echo -e "Latest Block Height: ${GREEN}$realtime_block_height${RESET}"
+    echo -e "\n${YELLOW}Please run the following command to apply the changes after exiting the script:${RESET}"
+    echo -e "${GREEN}source ~/.bash_profile${RESET}"
+    echo -e "${YELLOW}This ensures the environment variables are set in your current bash session.${RESET}"
+#    echo -e "Stake your Testnet IP with Grand Valley: ${ORANGE}https://aeneid.staking.story.foundation/validators/0x1b5452a212db06F6D6879C292157396B6dCa44d7${RESET}"
+    echo -e "${GREEN}Let's Buidl Tempo Together - Grand Valley${RESET}"
     read -p "Choose an option (e.g., 1a or 1 then a): " OPTION
 
     if [[ $OPTION =~ ^[1-4][a-z]$ ]]; then
@@ -241,7 +280,6 @@ function menu() {
           d) show_status ;;
           *) echo "Invalid sub-option. Please try again." ;;
         esac
-        pause
         ;;
       2)
         case $SUB_OPTION in
@@ -250,12 +288,12 @@ function menu() {
           c) delete_tempo_node ;;
           *) echo "Invalid sub-option. Please try again." ;;
         esac
-        pause
         ;;
-      3) show_endpoints; pause ;;
-      4) show_guidelines; pause ;;
-      5) exit 0 ;;
-      *) echo "Invalid option. Please try again."; pause ;;
+      3) install_tempo_app ;;
+      4) show_endpoints;;
+      5) show_guidelines;;
+      6) exit 0 ;;
+      *) echo "Invalid option. Please try again.";;
     esac
   done
 }

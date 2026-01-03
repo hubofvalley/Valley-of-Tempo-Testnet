@@ -47,6 +47,20 @@ echo "export TEMPO_HOME=\"$HOME/.tempo\"" >> $HOME/.bash_profile
 echo "export PATH=\$PATH:$HOME/.tempo/bin" >> $HOME/.bash_profile
 source $HOME/.bash_profile
 
+# Optional: Configure UFW based on chosen ports
+read -p "Configure UFW firewall rules for Tempo? (y/n): " SETUP_UFW
+if [[ "$SETUP_UFW" =~ ^[Yy]$ ]]; then
+    sudo apt install -y ufw
+    sudo ufw allow ssh
+    sudo ufw allow ${TEMPO_PORT}303/tcp
+    sudo ufw allow ${TEMPO_PORT}303/udp
+    sudo ufw allow ${TEMPO_PORT}545/tcp
+    sudo ufw allow ${TEMPO_PORT}546/tcp
+    sudo ufw allow ${TEMPO_PORT}900/tcp
+    sudo ufw --force enable
+    sudo ufw status verbose
+fi
+
 # 3. Install Tempo binary
 curl -L https://tempo.xyz/install | bash
 
@@ -56,8 +70,23 @@ if [ -f ~/.bashrc ]; then
   sed -i.bak '/tempo\|Tempo\|\.tempo/d' ~/.bashrc
 fi
 
+# Install Foundry (store env in .bash_profile just like Tempo)
+curl -L https://foundry.paradigm.xyz | bash
+
+if [ -f ~/.bashrc ]; then
+  grep -E "foundry|Foundry|\\.foundry" ~/.bashrc >> ~/.bash_profile || true
+  sed -i.bak '/foundry\|Foundry\|\.foundry/d' ~/.bashrc
+fi
+
+if ! grep -q ".foundry/bin" ~/.bash_profile; then
+  echo 'export PATH="$HOME/.foundry/bin:$PATH"' >> ~/.bash_profile
+fi
+
+source ~/.bash_profile
+~/.foundry/bin/foundryup
 source ~/.bash_profile
 tempo --version
+cast --version
 
 # 4. Create data directory and download snapshot
 mkdir -p "$TEMPO_HOME/data"
@@ -82,9 +111,11 @@ ExecStart=${HOME}/.tempo/bin/tempo node \
   --discovery.addr 0.0.0.0 \
   --discovery.port ${TEMPO_PORT}303 \
   --http \
-  --http.addr 0.0.0.0 \
+  --http.addr 127.0.0.1 \
   --http.port ${TEMPO_PORT}545 \
   --http.api eth,net,web3,txpool,trace \
+  --ws.addr 127.0.0.1 \
+  --ws.port ${TEMPO_PORT}546 \
   --metrics ${TEMPO_PORT}900
 StandardOutput=journal
 StandardError=journal

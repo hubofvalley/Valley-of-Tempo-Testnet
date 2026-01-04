@@ -174,17 +174,21 @@ function check_cast_installed() {
 }
 
 function show_node_status() {
-  check_cast_installed
-  if systemctl list-unit-files --type=service | grep -q '^tempo.service'; then
-    sudo systemctl status tempo --no-pager
+    port=$(ss -tlnp 2>/dev/null | awk '/tempo/ && /LISTEN/ { if (match($4, /:([0-9]+)/, a) && a[1] ~ /545$/) { print a[1]; exit } }')
     realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
+    node_height=$(curl -s -X POST "http://127.0.0.1:${port}" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
+    echo "Local Tempo node block height: $node_height"
     echo "Real-time Block Height: $realtime_block_height"
-  else
-    echo -e "${YELLOW}tempo.service is not installed or not found.${RESET}"
-  fi
-  echo -e "\n${YELLOW}Press Enter to go back to main menu${RESET}"
-  read -r
-  menu
+    block_difference=$(( realtime_block_height - node_height ))
+    echo -e "${YELLOW}Block Difference:${RESET} $block_difference"
+
+    # Add explanation for negative values
+    if (( block_difference < 0 )); then
+        echo -e "${GREEN}Note:${RESET} A negative value is normal - this means Story's official RPC block height is currently behind your node's height"
+    fi
+    echo -e "\n${YELLOW}Press Enter to go back to main menu${RESET}"
+    read -r
+    menu
 }
 
 function restart_tempo() {

@@ -20,6 +20,18 @@ read -p "Enter your preferred port number: (leave empty to use default: 30) " TE
 if [ -z "$TEMPO_PORT" ]; then
     TEMPO_PORT=30
 fi
+read -p "Use official Tempo snapshot data? (Y/n): " USE_SNAPSHOT
+if [[ "$USE_SNAPSHOT" =~ ^[Nn]$ ]]; then
+    USE_SNAPSHOT=false
+else
+    USE_SNAPSHOT=true
+fi
+read -p "Run node as pruned or archive? (p=pruned, a=archive) [p]: " NODE_MODE
+if [[ "$NODE_MODE" =~ ^[Aa]$ ]]; then
+    NODE_MODE="archive"
+else
+    NODE_MODE="pruned"
+fi
 read -p "Configure UFW firewall rules for Tempo? (y/n): " SETUP_UFW
 
 # Stop and remove existing Tempo node
@@ -90,10 +102,50 @@ cast --version
 
 # 4. Create data directory and download snapshot
 mkdir -p "$TEMPO_HOME/data"
-tempo download
+if [ "$USE_SNAPSHOT" = true ]; then
+    tempo download
+else
+    echo "Skipping snapshot download; node will sync from genesis."
+fi
 
 # 5. Create systemd service file
-sudo tee /etc/systemd/system/tempo.service > /dev/null <<EOF
+if [ "$NODE_MODE" = "archive" ]; then
+  sudo tee /etc/systemd/system/tempo.service > /dev/null <<EOF
+[Unit]
+Description=Tempo Node (Reth stack)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=${USER}
+WorkingDirectory=${HOME}/.tempo
+Environment=RUST_LOG=info
+ExecStart=${HOME}/.tempo/bin/tempo node \
+  --datadir ${HOME}/.tempo/data \
+  --follow \
+  --port ${TEMPO_PORT}303 \
+  --discovery.addr 0.0.0.0 \
+  --discovery.port ${TEMPO_PORT}303 \
+  --http \
+  --http.addr 127.0.0.1 \
+  --http.port ${TEMPO_PORT}545 \
+  --http.api eth,net,web3,txpool,trace \
+  --ws.addr 127.0.0.1 \
+  --ws.port ${TEMPO_PORT}546 \
+  --metrics ${TEMPO_PORT}900
+StandardOutput=journal
+StandardError=journal
+Restart=always
+RestartSec=10
+SyslogIdentifier=tempo
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target
+EOF
+else
+  sudo tee /etc/systemd/system/tempo.service > /dev/null <<EOF
 [Unit]
 Description=Tempo Node (Reth stack)
 After=network.target
@@ -112,9 +164,11 @@ ExecStart=$HOME/.tempo/bin/tempo node \
   --discovery.addr 0.0.0.0 \
   --discovery.port ${TEMPO_PORT}303 \
   --http \
-  --http.addr 0.0.0.0 \
+  --http.addr 127.0.0.1 \
   --http.port ${TEMPO_PORT}545 \
   --http.api eth,net,web3,txpool,trace \
+  --ws.addr 127.0.0.1 \
+  --ws.port ${TEMPO_PORT}546 \
   --metrics ${TEMPO_PORT}900 \
   --full \
   --prune.block-interval 2500 \
@@ -132,6 +186,7 @@ LimitNOFILE=infinity
 [Install]
 WantedBy=multi-user.target
 EOF
+fi
 
 # 6. Start the node
 sudo systemctl daemon-reload

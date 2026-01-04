@@ -133,6 +133,8 @@ ExecStart=${HOME}/.tempo/bin/tempo node \
   --http.api eth,net,web3,txpool,trace \
   --ws.addr 127.0.0.1 \
   --ws.port ${TEMPO_PORT}546 \
+  --authrpc.addr 127.0.0.1 \
+  --authrpc.port ${TEMPO_PORT}551 \
   --metrics ${TEMPO_PORT}900
 StandardOutput=journal
 StandardError=journal
@@ -169,6 +171,8 @@ ExecStart=$HOME/.tempo/bin/tempo node \
   --http.api eth,net,web3,txpool,trace \
   --ws.addr 127.0.0.1 \
   --ws.port ${TEMPO_PORT}546 \
+  --authrpc.addr 127.0.0.1 \
+  --authrpc.port ${TEMPO_PORT}551 \
   --metrics ${TEMPO_PORT}900 \
   --full \
   --prune.block-interval 2500 \

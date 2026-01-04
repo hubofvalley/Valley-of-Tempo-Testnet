@@ -171,14 +171,31 @@ function check_cast_installed() {
   fi
 }
 
-function show_status() {
+function show_node_status() {
   check_cast_installed
   if systemctl list-unit-files --type=service | grep -q '^tempo.service'; then
-    sudo systemctl status tempo --no-pager
+    cast 
   else
     echo -e "${YELLOW}tempo.service is not installed or not found.${RESET}"
   fi
   menu
+}
+
+function show_node_status() {
+    realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
+    node_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
+    echo "Tempo node block height: $node_height"
+    block_difference=$(( realtime_block_height - node_height ))
+    echo "Real-time Block Height: $realtime_block_height"
+    echo -e "${YELLOW}Block Difference:${NC} $block_difference"
+
+    # Add explanation for negative values
+    if (( block_difference < 0 )); then
+        echo -e "${GREEN}Note:${NC} A negative value is normal - this means Story's official RPC block height is currently behind your node's height"
+    fi
+    echo -e "\n${YELLOW}Press Enter to go back to main menu${RESET}"
+    read -r
+    menu
 }
 
 function restart_tempo() {
@@ -333,7 +350,7 @@ function menu() {
           a) deploy_tempo_node ;;
           b) apply_snapshot ;;
           c) upgrade_tempo_binary ;;
-          d) show_status ;;
+          d) show_node_status ;;
           e) show_logs ;;
           *) echo "Invalid sub-option. Please try again." ;;
         esac

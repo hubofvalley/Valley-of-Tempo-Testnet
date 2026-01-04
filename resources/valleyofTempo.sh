@@ -77,6 +77,7 @@ Grand Valley Tempo public endpoints:${RESET}
 - evm-rpc: ${BLUE}https://lightnode-json-rpc-tempo.grandvalleys.com${RESET}
 - cosmos ws: ${BLUE}wss://lightnode-rpc-tempo.grandvalleys.com/websocket${RESET}
 - evm ws: ${BLUE}wss://lightnode-wss-tempo.grandvalleys.com${RESET}
+- enode: ${BLUE}enode://babf666d3194efe69aa3cb0777b03ea6d151f31d1b2fa9a2de7d7cba262df3b425e259744a914f87c895a57f26d7e07e7e455a7c8622207a976367c3ee9b66ba@enode-tempo.grandvalleys.com:27303${RESET}
 "
 
 # Display LOGO and wait for user input to continue
@@ -159,7 +160,9 @@ function deploy_tempo_node() {
 }
 
 function show_logs() {
-  sudo journalctl -u tempo -fn 100 -o cat
+  trap 'echo -e "\nStopping logs and returning to main menu...";' INT
+  sudo journalctl -u tempo -fn 100 -o cat || true
+  trap - INT
   menu
 }
 
@@ -174,28 +177,15 @@ function check_cast_installed() {
 function show_node_status() {
   check_cast_installed
   if systemctl list-unit-files --type=service | grep -q '^tempo.service'; then
-    cast 
+    sudo systemctl status tempo --no-pager
+    realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
+    echo "Real-time Block Height: $realtime_block_height"
   else
     echo -e "${YELLOW}tempo.service is not installed or not found.${RESET}"
   fi
+  echo -e "\n${YELLOW}Press Enter to go back to main menu${RESET}"
+  read -r
   menu
-}
-
-function show_node_status() {
-    realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
-    node_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
-    echo "Tempo node block height: $node_height"
-    block_difference=$(( realtime_block_height - node_height ))
-    echo "Real-time Block Height: $realtime_block_height"
-    echo -e "${YELLOW}Block Difference:${NC} $block_difference"
-
-    # Add explanation for negative values
-    if (( block_difference < 0 )); then
-        echo -e "${GREEN}Note:${NC} A negative value is normal - this means Story's official RPC block height is currently behind your node's height"
-    fi
-    echo -e "\n${YELLOW}Press Enter to go back to main menu${RESET}"
-    read -r
-    menu
 }
 
 function restart_tempo() {

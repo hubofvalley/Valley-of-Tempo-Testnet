@@ -74,19 +74,19 @@ if [[ "$SETUP_UFW" =~ ^[Yy]$ ]]; then
 fi
 
 # 3. Install Tempo binary
-curl -L https://tempo.xyz/install | bash
+curl -L https://tempo.xyz/install | bash 
 
 touch ~/.bash_profile
-if [ -f ~/.bashrc ]; then
+if [ -f ~/.bashrc ]; then 
   grep -E "tempo|Tempo|\\.tempo" ~/.bashrc >> ~/.bash_profile || true
   sed -i.bak '/tempo\|Tempo\|\.tempo/d' ~/.bashrc
 fi
 
-# Install Foundry (store env in .bash_profile just like Tempo)
+# Install Foundry (store env in .bash_profile just like Tempo) 
 curl -L https://foundry.paradigm.xyz | bash
 
 if [ -f ~/.bashrc ]; then
-  grep -E "foundry|Foundry|\\.foundry" ~/.bashrc >> ~/.bash_profile || true
+  grep -E "foundry|Foundry|\\.foundry" ~/.bashrc >> ~/.bash_profile || true 
   sed -i.bak '/foundry\|Foundry\|\.foundry/d' ~/.bashrc
 fi
 

@@ -77,7 +77,6 @@ Grand Valley Tempo public endpoints:${RESET}
 - evm-rpc: ${BLUE}https://lightnode-json-rpc-tempo.grandvalleys.com${RESET}
 - cosmos ws: ${BLUE}wss://lightnode-rpc-tempo.grandvalleys.com/websocket${RESET}
 - evm ws: ${BLUE}wss://lightnode-wss-tempo.grandvalleys.com${RESET}
-- peer: ${BLUE}fffb1a0dc2b6af331c65328c1ed9afad0bf107de@peer-tempo.grandvalleys.com:37656${RESET}
 "
 
 # Display LOGO and wait for user input to continue
@@ -164,8 +163,21 @@ function show_logs() {
   menu
 }
 
+function check_cast_installed() {
+  if command -v cast >/dev/null 2>&1; then
+    echo -e "${GREEN}Foundry cast is installed:${RESET} $(cast --version)"
+  else
+    echo -e "${RED}Foundry cast not found.${RESET} Install it via menu option 3 (Install the Tempo App) or run the install commands manually."
+  fi
+}
+
 function show_status() {
-  sudo systemctl status tempo
+  check_cast_installed
+  if systemctl list-unit-files --type=service | grep -q '^tempo.service'; then
+    sudo systemctl status tempo --no-pager
+  else
+    echo -e "${YELLOW}tempo.service is not installed or not found.${RESET}"
+  fi
   menu
 }
 
@@ -218,8 +230,45 @@ function install_tempo_app() {
     menu
 }
 
+function prompt_back_or_continue() {
+    read -p "Press Enter to continue or type 'back' to go back to the menu: " user_choice
+    if [[ ${user_choice,,} == "back" ]]; then
+        menu
+        return 1
+    fi
+    return 0
+}
+
 function apply_snapshot() {
+  echo -e "${YELLOW}You are about to download and apply the official Tempo snapshot. This may overwrite existing data in $HOME/.tempo/data.${RESET}"
+  if ! prompt_back_or_continue; then
+    return
+  fi
+  sudo systemctl stop tempo
   tempo download
+  sudo systemctl daemon-reload
+  sudo systemctl restart tempo
+  menu
+}
+
+function upgrade_tempo_binary() {
+  echo -e "${YELLOW}You are about to update your Tempo node binary. This may overwrite existing your Tempo node binary version.${RESET}"
+  if ! prompt_back_or_continue; then
+    return
+  fi
+  echo -e "${YELLOW}Upgrading Tempo binary to latest release...${RESET}"
+  sudo systemctl stop tempo
+  curl -L https://tempo.xyz/install | bash
+  touch ~/.bash_profile
+  if [ -f ~/.bashrc ]; then
+    grep -E "tempo|Tempo|\\.tempo" ~/.bashrc >> ~/.bash_profile || true
+    sed -i.bak '/tempo\|Tempo\|\.tempo/d' ~/.bashrc
+  fi
+  source ~/.bash_profile
+  tempo --version
+  sudo systemctl daemon-reload
+  sudo systemctl restart tempo
+  echo -e "${GREEN}Tempo binary upgraded and service restarted.${RESET}"
   menu
 }
 
@@ -247,9 +296,10 @@ function menu() {
     echo "Main Menu:"
     echo -e "${GREEN}1. Node Interactions:${RESET}"
     echo "   a. Deploy/Re-deploy Tempo Node"
-    echo "   b. Apply Snapshot (tempo download)"
-    echo "   c. Show Tempo Logs"
-    echo "   d. Show Tempo Status"
+    echo "   b. Upgrade Tempo binary"
+    echo "   c. Apply Snapshot (tempo download)"
+    echo "   d. Show Tempo Logs"
+    echo "   e. Show Tempo Status"
     echo -e "${GREEN}2. Node Management:${RESET}"
     echo "   a. Restart Tempo node"
     echo "   b. Stop Tempo node"
@@ -281,9 +331,10 @@ function menu() {
       1)
         case $SUB_OPTION in
           a) deploy_tempo_node ;;
-          b) apply_snapshot ;;
-          c) show_logs ;;
-          d) show_status ;;
+          b) upgrade_tempo_binary ;;
+          c) apply_snapshot ;;
+          d) show_logs ;;
+          e) show_status ;;
           *) echo "Invalid sub-option. Please try again." ;;
         esac
         ;;

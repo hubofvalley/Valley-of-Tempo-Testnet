@@ -298,8 +298,8 @@ function menu() {
     echo "   a. Deploy/Re-deploy Tempo Node"
     echo "   b. Upgrade Tempo binary"
     echo "   c. Apply Snapshot (tempo download)"
-    echo "   d. Show Tempo Logs"
-    echo "   e. Show Tempo Status"
+    echo "   d. Show Tempo Status"
+    echo "   e. Show Tempo Logs"
     echo -e "${GREEN}2. Node Management:${RESET}"
     echo "   a. Restart Tempo node"
     echo "   b. Stop Tempo node"
@@ -331,10 +331,10 @@ function menu() {
       1)
         case $SUB_OPTION in
           a) deploy_tempo_node ;;
-          b) upgrade_tempo_binary ;;
-          c) apply_snapshot ;;
-          d) show_logs ;;
-          e) show_status ;;
+          b) apply_snapshot ;;
+          c) upgrade_tempo_binary ;;
+          d) show_status ;;
+          e) show_logs ;;
           *) echo "Invalid sub-option. Please try again." ;;
         esac
         ;;

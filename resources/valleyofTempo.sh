@@ -75,7 +75,6 @@ ${GREEN}Contact${RESET}
 ENDPOINTS="${GREEN}
 Grand Valley Tempo public endpoints:${RESET}
 - evm-rpc: ${BLUE}https://lightnode-json-rpc-tempo.grandvalleys.com${RESET}
-- cosmos ws: ${BLUE}wss://lightnode-rpc-tempo.grandvalleys.com/websocket${RESET}
 - evm ws: ${BLUE}wss://lightnode-wss-tempo.grandvalleys.com${RESET}
 - enode: ${BLUE}enode://babf666d3194efe69aa3cb0777b03ea6d151f31d1b2fa9a2de7d7cba262df3b425e259744a914f87c895a57f26d7e07e7e455a7c8622207a976367c3ee9b66ba@enode-tempo.grandvalleys.com:27303${RESET}
 "

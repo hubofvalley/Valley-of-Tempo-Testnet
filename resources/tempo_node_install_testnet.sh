@@ -14,8 +14,8 @@ LOGO="
 
 echo "$LOGO"
 
-# Prompt for MONIKER and TEMPO_PORT
-read -p "Enter your moniker: " MONIKER
+# Prompt for TEMPO_MONIKER and TEMPO_PORT
+read -p "Enter your moniker: " TEMPO_MONIKER
 read -p "Enter your preferred port number: (leave empty to use default: 30) " TEMPO_PORT
 if [ -z "$TEMPO_PORT" ]; then
     TEMPO_PORT=30
@@ -48,12 +48,12 @@ sudo apt install -y curl git jq build-essential gcc unzip wget lz4 openssl libss
 
 # 2. Set environment variables
 touch "$HOME/.bash_profile"
-export MONIKER=$MONIKER
+export TEMPO_MONIKER=$TEMPO_MONIKER
 export TEMPO_CHAIN_ID="andantino"
 export TEMPO_PORT=$TEMPO_PORT
 export TEMPO_HOME="$HOME/.tempo"
 
-echo "export MONIKER=\"$MONIKER\"" >> $HOME/.bash_profile
+echo "export TEMPO_MONIKER=\"$TEMPO_MONIKER\"" >> $HOME/.bash_profile
 echo "export TEMPO_CHAIN_ID=\"andantino\"" >> $HOME/.bash_profile
 echo "export TEMPO_PORT=\"$TEMPO_PORT\"" >> $HOME/.bash_profile
 echo "export TEMPO_HOME=\"$HOME/.tempo\"" >> $HOME/.bash_profile
@@ -100,10 +100,11 @@ source ~/.bash_profile
 tempo --version
 cast --version
 
-# 4. Create data directory and download snapshot
+# 4. Create data directory and download snapshot (optional)
 mkdir -p "$TEMPO_HOME/data"
 if [ "$USE_SNAPSHOT" = true ]; then
     tempo download
+    sudo rm -r $HOME/.local/share/reth
 else
     echo "Skipping snapshot download; node will sync from genesis."
 fi

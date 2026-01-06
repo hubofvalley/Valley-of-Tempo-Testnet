@@ -350,8 +350,8 @@ function menu() {
       1)
         case $SUB_OPTION in
           a) deploy_tempo_node ;;
-          b) apply_snapshot ;;
-          c) upgrade_tempo_binary ;;
+          b) upgrade_tempo_binary ;;
+          c) apply_snapshot;;
           d) show_node_status ;;
           e) show_logs ;;
           *) echo "Invalid sub-option. Please try again." ;;

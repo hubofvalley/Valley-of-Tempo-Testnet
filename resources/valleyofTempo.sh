@@ -205,6 +205,10 @@ function stop_tempo() {
 }
 
 function delete_tempo_node() {
+  echo -e "${YELLOW}You are about to delete the Tempo node.${RESET}"
+  if ! prompt_back_or_continue; then
+    return
+  fi
   sudo systemctl stop tempo || true
   sudo systemctl disable tempo || true
   sudo rm -f /etc/systemd/system/tempo.service

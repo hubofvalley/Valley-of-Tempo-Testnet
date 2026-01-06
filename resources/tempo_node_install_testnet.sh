@@ -64,11 +64,8 @@ source $HOME/.bash_profile
 if [[ "$SETUP_UFW" =~ ^[Yy]$ ]]; then
     sudo apt install -y ufw
     sudo ufw allow ssh
-    sudo ufw allow ${TEMPO_PORT}303/tcp
-    sudo ufw allow ${TEMPO_PORT}303/udp
-    sudo ufw allow ${TEMPO_PORT}545/tcp
-    sudo ufw allow ${TEMPO_PORT}546/tcp
-    sudo ufw allow ${TEMPO_PORT}900/tcp
+    sudo ufw allow ${TEMPO_PORT}303/tcp comment 'Tempo P2P'
+    sudo ufw allow ${TEMPO_PORT}303/udp comment 'Tempo discovery'
     sudo ufw --force enable
     sudo ufw status verbose
 fi

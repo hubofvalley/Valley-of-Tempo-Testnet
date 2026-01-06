@@ -63,7 +63,7 @@ source $HOME/.bash_profile
 # Optional: Configure UFW based on chosen ports
 if [[ "$SETUP_UFW" =~ ^[Yy]$ ]]; then
     sudo apt install -y ufw
-    sudo ufw allow ssh
+    sudo ufw allow 22/tcp comment "SSH Access"
     sudo ufw allow ${TEMPO_PORT}303/tcp comment 'Tempo P2P'
     sudo ufw allow ${TEMPO_PORT}303/udp comment 'Tempo discovery'
     sudo ufw --force enable

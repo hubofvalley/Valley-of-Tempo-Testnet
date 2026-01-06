@@ -272,7 +272,8 @@ function upgrade_tempo_binary() {
   fi
   echo -e "${YELLOW}Upgrading Tempo binary to latest release...${RESET}"
   sudo systemctl stop tempo
-  curl -L https://tempo.xyz/install | bash
+  #sudo rm -r $HOME/.tempo/bin/tempo
+  tempoup
   touch ~/.bash_profile
   if [ -f ~/.bashrc ]; then
     grep -E "tempo|Tempo|\\.tempo" ~/.bashrc >> ~/.bash_profile || true

@@ -293,13 +293,18 @@ function show_endpoints() {
 
 function show_guidelines() {
   echo -e "${CYAN}Guidelines on How to Use the Valley of Tempo${RESET}"
-  echo -e "${GREEN}Menu tips:${RESET}"
-  echo " - Enter the number/letter pair (e.g., 1a) or number then letter."
-  echo " - Use 'yes/no' when prompted."
-  echo -e "${GREEN}Ops tips:${RESET}"
-  echo " - Check logs and status after deploy."
-  echo " - Backup any keys you generate with the Tempo CLI."
-  echo " - Run 'source ~/.bash_profile' after exiting to refresh env vars."
+  echo -e "${GREEN}Navigation:${RESET}"
+  echo " - Enter the number/letter pair (e.g., 1a) or type the number then the letter."
+  echo " - Reply to prompts with 'yes' or 'no'; press Enter to accept defaults."
+  echo " - Run the script as the same user that owns ~/.tempo to avoid permission issues."
+  echo -e "${GREEN}Operations:${RESET}"
+  echo " - After deploy/upgrade, use menu 1d (status) and 1e (logs) to verify the node."
+  echo " - Backup any keys you generate with the Tempo CLI; keep validator keys offline."
+  echo " - Run 'source ~/.bash_profile' after exiting to refresh environment variables."
+  echo " - Stop tempo.service before deleting or redeploying to prevent lock errors."
+  echo -e "${GREEN}Safety:${RESET}"
+  echo " - Never share private keys, mnemonics, or RPC auth details."
+  echo " - Ensure the host meets the CPU/RAM/SSD requirements before syncing."
   menu
 }
 

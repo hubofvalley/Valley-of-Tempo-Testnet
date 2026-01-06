@@ -90,7 +90,7 @@ echo -e "$INTRO"
 echo -e "$ENDPOINTS"
 echo -e "\n${YELLOW}Press Enter to continue${RESET}"
 read -r
-echo "export TEMPO_CHAIN_ID=\"andantino\"" >> $HOME/.bash_profile
+echo "export TEMPO_CHAIN_ID=\"42429\"" >> $HOME/.bash_profile
 echo "export TEMPO_HOME=\"$HOME/.tempo\"" >> $HOME/.bash_profile
 echo "export PATH=\$PATH:$HOME/.tempo/bin" >> $HOME/.bash_profile
 source $HOME/.bash_profile

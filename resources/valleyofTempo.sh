@@ -41,13 +41,9 @@ ${YELLOW}| Category  | Requirements     |
 | Bandwidth | 1 GBit/s         |${RESET}
 
 - service file name: ${CYAN}tempo.service${RESET}
-- current chain: ${CYAN}andantino (Tempo Testnet)${RESET}
-- current chain ID: ${CYAN}42429${RESET}
-- current tempo binary version: ${CYAN}0.8.0${RESET}
-- Commit SHA: 6318f1a6258d0487c761955e4178ea3897008334
-- Build Timestamp: ${CYAN}2025-12-22T14:41:02.631694792Z${RESET}
-- Build Features: ${CYAN}asm_keccak,default,jemalloc,otlp${RESET}
-- Build Profile: ${CYAN}maxperf${RESET}
+- current chain: ${CYAN}Moderato (Tempo Testnet)${RESET}
+- current chain ID: ${CYAN}42431${RESET}
+- current tempo binary version: ${CYAN}v1.0.0-rc.1${RESET}
 "
 
 PRIVACY_SAFETY_STATEMENT="
@@ -90,7 +86,7 @@ echo -e "$INTRO"
 echo -e "$ENDPOINTS"
 echo -e "\n${YELLOW}Press Enter to continue${RESET}"
 read -r
-echo "export TEMPO_CHAIN_ID=\"42429\"" >> $HOME/.bash_profile
+echo "export TEMPO_CHAIN_ID=\"42431\"" >> $HOME/.bash_profile
 echo "export TEMPO_HOME=\"$HOME/.tempo\"" >> $HOME/.bash_profile
 echo "export PATH=\$PATH:$HOME/.tempo/bin" >> $HOME/.bash_profile
 source $HOME/.bash_profile

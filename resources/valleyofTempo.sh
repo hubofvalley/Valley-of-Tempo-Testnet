@@ -175,7 +175,7 @@ function check_cast_installed() {
 
 function show_node_status() {
     port=$(ss -tlnp 2>/dev/null | awk '/tempo/ && /LISTEN/ { if (match($4, /:([0-9]+)/, a) && a[1] ~ /545$/) { print a[1]; exit } }')
-    realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
+    realtime_block_height=$(curl -s -X POST "https://rpc.moderato.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
     node_height=$(curl -s -X POST "http://127.0.0.1:${port}" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
     echo "Local Tempo node block height: $node_height"
     echo "Real-time Block Height: $realtime_block_height"
@@ -222,6 +222,7 @@ function delete_tempo_node() {
 
 function install_tempo_app() {
     curl -L https://tempo.xyz/install | bash
+    tempoup -i v1.0.0-rc.1
     touch ~/.bash_profile
     if [ -f ~/.bashrc ]; then
         grep -E "tempo|Tempo|\\.tempo" ~/.bashrc >> ~/.bash_profile || true
@@ -265,6 +266,22 @@ function apply_snapshot() {
   menu
 }
 
+function migrate_network() {
+  echo -e "${YELLOW}You are about to migrate your node network from Andantino testnet to Moderato testnet. This may delete/overwrite existing data in $HOME/.tempo/data.${RESET}"
+  echo "This process will:"
+  echo "- stop tempo.service (if present)"
+  echo "- delete the old database at $HOME/.tempo/data"
+  echo "- update the tempo binary to v1.0.0-rc.1"
+  echo "- replace /etc/systemd/system/tempo.service"
+  echo "- optional: apply the official Tempo Moderato snapshot"
+  echo "- start the node again"
+  if ! prompt_back_or_continue; then
+    return
+  fi
+  bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main/Tempo/resources/moderato_network_upgrade.sh)
+  menu
+}
+
 function upgrade_tempo_binary() {
   echo -e "${YELLOW}You are about to update your Tempo node binary. This may overwrite existing your Tempo node binary version.${RESET}"
   if ! prompt_back_or_continue; then
@@ -273,7 +290,7 @@ function upgrade_tempo_binary() {
   echo -e "${YELLOW}Upgrading Tempo binary to latest release...${RESET}"
   sudo systemctl stop tempo
   #sudo rm -r $HOME/.tempo/bin/tempo
-  tempoup
+  tempoup -i v1.0.0-rc.1
   touch ~/.bash_profile
   if [ -f ~/.bashrc ]; then
     grep -E "tempo|Tempo|\\.tempo" ~/.bashrc >> ~/.bash_profile || true
@@ -311,15 +328,16 @@ function show_guidelines() {
 
 # Menu function
 function menu() {
-    realtime_block_height=$(curl -s -X POST "https://rpc.testnet.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
+    realtime_block_height=$(curl -s -X POST "https://rpc.moderato.tempo.xyz" -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' | jq -r '.result' | xargs printf "%d\n")
     echo -e "${ORANGE}Valley of Tempo Testnet${RESET}"
     echo "Main Menu:"
     echo -e "${GREEN}1. Node Interactions:${RESET}"
     echo "   a. Deploy/Re-deploy Tempo Node"
     echo "   b. Upgrade Tempo binary"
     echo "   c. Apply Snapshot (tempo download)"
-    echo "   d. Show Tempo Status"
-    echo "   e. Show Tempo Logs"
+    echo "   d. Migrate from Andantino to Moderato (if applicable)"
+    echo "   e. Show Tempo Status"
+    echo "   f. Show Tempo Logs"
     echo -e "${GREEN}2. Node Management:${RESET}"
     echo "   a. Restart Tempo node"
     echo "   b. Stop Tempo node"
@@ -353,8 +371,9 @@ function menu() {
           a) deploy_tempo_node ;;
           b) upgrade_tempo_binary ;;
           c) apply_snapshot;;
-          d) show_node_status ;;
-          e) show_logs ;;
+          d) migrate_network;;
+          e) show_node_status ;;
+          f) show_logs ;;
           *) echo "Invalid sub-option. Please try again." ;;
         esac
         ;;

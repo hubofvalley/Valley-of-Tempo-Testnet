@@ -49,12 +49,12 @@ sudo apt install -y curl git jq build-essential gcc unzip wget lz4 openssl libss
 # 2. Set environment variables
 touch "$HOME/.bash_profile"
 export TEMPO_MONIKER=$TEMPO_MONIKER
-export TEMPO_CHAIN_ID="andantino"
+export TEMPO_CHAIN_ID="moderato"
 export TEMPO_PORT=$TEMPO_PORT
 export TEMPO_HOME="$HOME/.tempo"
 
 echo "export TEMPO_MONIKER=\"$TEMPO_MONIKER\"" >> $HOME/.bash_profile
-echo "export TEMPO_CHAIN_ID=\"andantino\"" >> $HOME/.bash_profile
+echo "export TEMPO_CHAIN_ID=\"moderato\"" >> $HOME/.bash_profile
 echo "export TEMPO_PORT=\"$TEMPO_PORT\"" >> $HOME/.bash_profile
 echo "export TEMPO_HOME=\"$HOME/.tempo\"" >> $HOME/.bash_profile
 echo "export PATH=\$PATH:$HOME/.tempo/bin" >> $HOME/.bash_profile
@@ -70,8 +70,9 @@ if [[ "$SETUP_UFW" =~ ^[Yy]$ ]]; then
     sudo ufw status verbose
 fi
 
-# 3. Install Tempo binary
-curl -L https://tempo.xyz/install | bash 
+# 3. Install Tempo binary v1.0.0-rc.1
+curl -L https://tempo.xyz/install | bash
+tempoup -i v1.0.0-rc.1
 
 touch ~/.bash_profile
 if [ -f ~/.bashrc ]; then 
@@ -121,7 +122,7 @@ WorkingDirectory=${HOME}/.tempo
 Environment=RUST_LOG=info
 ExecStart=${HOME}/.tempo/bin/tempo node \
   --datadir ${HOME}/.tempo/data \
-  --follow \
+  --follow wss://rpc.moderato.tempo.xyz \
   --port ${TEMPO_PORT}303 \
   --discovery.addr 0.0.0.0 \
   --discovery.port ${TEMPO_PORT}303 \
@@ -159,7 +160,7 @@ Environment=RUST_LOG=info
 WorkingDirectory=$HOME/.tempo
 ExecStart=$HOME/.tempo/bin/tempo node \
   --datadir $HOME/.tempo/data \
-  --follow \
+  --follow wss://rpc.moderato.tempo.xyz \
   --port ${TEMPO_PORT}303 \
   --discovery.addr 0.0.0.0 \
   --discovery.port ${TEMPO_PORT}303 \

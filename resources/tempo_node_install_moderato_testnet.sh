@@ -127,9 +127,11 @@ ExecStart=${HOME}/.tempo/bin/tempo node \
   --discovery.addr 0.0.0.0 \
   --discovery.port ${TEMPO_PORT}303 \
   --http \
+  --http.api eth,net,web3,txpool,trace \
   --http.addr 127.0.0.1 \
   --http.port ${TEMPO_PORT}545 \
-  --http.api eth,net,web3,txpool,trace \
+  --ws \
+  --ws.api eth,web3,net,txpool \
   --ws.addr 127.0.0.1 \
   --ws.port ${TEMPO_PORT}546 \
   --authrpc.addr 127.0.0.1 \
@@ -165,9 +167,11 @@ ExecStart=$HOME/.tempo/bin/tempo node \
   --discovery.addr 0.0.0.0 \
   --discovery.port ${TEMPO_PORT}303 \
   --http \
+  --http.api eth,net,web3,txpool,trace \
   --http.addr 127.0.0.1 \
   --http.port ${TEMPO_PORT}545 \
-  --http.api eth,net,web3,txpool,trace \
+  --ws \
+  --ws.api eth,web3,net,txpool \
   --ws.addr 127.0.0.1 \
   --ws.port ${TEMPO_PORT}546 \
   --authrpc.addr 127.0.0.1 \

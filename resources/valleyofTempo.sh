@@ -68,11 +68,13 @@ ${GREEN}Contact${RESET}
 - If you have any concerns or questions, please contact us at letsbuidltogether@grandvalleys.com.
 "
 
+GRAND_VALLEY_ENODE="enode://74d4820ebbab1b05349fb836d8de59558222ccb1ae12e1b270eb69f758829cd1e6c82735a4adc6960e5069b0893c929a157c407d8f3f9ea277892a7d15d2e64f@enode-tempo.grandvalleys.com:27303"
+
 ENDPOINTS="${GREEN}
 Grand Valley Tempo public endpoints:${RESET}
 - evm-rpc: ${BLUE}https://lightnode-json-rpc-tempo.grandvalleys.com${RESET}
 - evm ws: ${BLUE}wss://lightnode-wss-tempo.grandvalleys.com${RESET}
-- enode: ${BLUE}enode://babf666d3194efe69aa3cb0777b03ea6d151f31d1b2fa9a2de7d7cba262df3b425e259744a914f87c895a57f26d7e07e7e455a7c8622207a976367c3ee9b66ba@enode-tempo.grandvalleys.com:27303${RESET}
+- enode: ${BLUE}${GRAND_VALLEY_ENODE}${RESET}
 "
 
 # Display LOGO and wait for user input to continue
@@ -256,9 +258,69 @@ function apply_snapshot() {
     return
   fi
   sudo systemctl stop tempo
-  tempo download
+  tempo download --url https://tempo-node-snapshots.tempoxyz.dev/tempo-42431-412580-1768107622.tar.lz4
   sudo systemctl daemon-reload
   sudo systemctl restart tempo
+  menu
+}
+
+function add_trusted_peer() {
+  local reth_file="$HOME/.tempo/data/reth.toml"
+  echo -e "${YELLOW}You are about to edit trusted peers in $reth_file.${RESET}"
+  echo "This will add an enode to [peers].trusted_nodes."
+  if ! prompt_back_or_continue; then
+    return
+  fi
+  if [ ! -f "$reth_file" ]; then
+    echo -e "${RED}reth.toml not found at $reth_file.${RESET}"
+    echo "Start the node once to generate it, then try again."
+    menu
+    return
+  fi
+
+  read -p "Add Grand Valley peer or enter manually? (g=Grand Valley, m=manual): " PEER_CHOICE
+  local enode=""
+  if [[ "$PEER_CHOICE" =~ ^[Gg]$ ]]; then
+    enode="$GRAND_VALLEY_ENODE"
+  elif [[ "$PEER_CHOICE" =~ ^[Mm]$ ]]; then
+    read -p "Enter enode://...: " enode
+  else
+    echo "Invalid choice. Please select g or m."
+    menu
+    return
+  fi
+
+  if [ -z "$enode" ]; then
+    echo "No enode provided. Aborting."
+    menu
+    return
+  fi
+
+  if [[ "$enode" != enode://* ]]; then
+    echo "Invalid enode format. It must start with enode://"
+    menu
+    return
+  fi
+
+  if grep -Fq "$enode" "$reth_file"; then
+    echo "This enode is already present in trusted_nodes."
+    menu
+    return
+  fi
+
+  cp "$reth_file" "$reth_file.bak"
+  if grep -Eq '^[[:space:]]*trusted_nodes[[:space:]]*=[[:space:]]*\[[[:space:]]*\]' "$reth_file"; then
+    sed -i -E "s|^([[:space:]]*trusted_nodes[[:space:]]*=[[:space:]]*)\\[[[:space:]]*\\]|\\1[\"$enode\"]|" "$reth_file"
+  elif grep -Eq '^[[:space:]]*trusted_nodes[[:space:]]*=' "$reth_file"; then
+    sed -i -E "s|^([[:space:]]*trusted_nodes[[:space:]]*=[[:space:]]*\\[)(.*)(\\][[:space:]]*)$|\\1\\2, \"$enode\"\\3|" "$reth_file"
+  else
+    echo -e "${RED}Failed to find trusted_nodes in $reth_file.${RESET}"
+    echo "Make sure the file contains a trusted_nodes entry under [peers]."
+    menu
+    return
+  fi
+  echo -e "${GREEN}Trusted peer added successfully.${RESET}"
+  echo "Restart tempo.service to apply changes."
   menu
 }
 
@@ -331,9 +393,10 @@ function menu() {
     echo "   a. Deploy/Re-deploy Tempo Node"
     echo "   b. Upgrade Tempo binary"
     echo "   c. Apply Snapshot (tempo download)"
-    echo "   d. Migrate from Andantino to Moderato (if applicable)"
-    echo "   e. Show Tempo Status"
-    echo "   f. Show Tempo Logs"
+    echo "   d. Add Trusted Peer (enode)"
+    echo "   e. Migrate from Andantino to Moderato (if applicable)"
+    echo "   f. Show Tempo Status"
+    echo "   g. Show Tempo Logs"
     echo -e "${GREEN}2. Node Management:${RESET}"
     echo "   a. Restart Tempo node"
     echo "   b. Stop Tempo node"
@@ -367,9 +430,10 @@ function menu() {
           a) deploy_tempo_node ;;
           b) upgrade_tempo_binary ;;
           c) apply_snapshot;;
-          d) migrate_network;;
-          e) show_node_status ;;
-          f) show_logs ;;
+          d) add_trusted_peer ;;
+          e) migrate_network;;
+          f) show_node_status ;;
+          g) show_logs ;;
           *) echo "Invalid sub-option. Please try again." ;;
         esac
         ;;

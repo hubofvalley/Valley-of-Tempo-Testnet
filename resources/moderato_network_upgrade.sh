@@ -133,7 +133,7 @@ fi
 
 # Apply snapshot if selected
 if [ "$USE_SNAPSHOT" = true ]; then
-  tempo download
+  tempo download --url https://tempo-node-snapshots.tempoxyz.dev/tempo-42431-412580-1768107622.tar.lz4
 else
   echo "Skipping snapshot download; node will sync from genesis."
 fi

@@ -274,7 +274,7 @@ function migrate_network() {
   if ! prompt_back_or_continue; then
     return
   fi
-  bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main/Tempo/resources/moderato_network_upgrade.sh)
+  bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Valley-of-Tempo-Testnet/main/resources/moderato_network_upgrade.sh)
   menu
 }
 

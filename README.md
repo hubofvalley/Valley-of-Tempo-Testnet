@@ -29,8 +29,10 @@ Valley of Tempo Testnet is an open-source project by **Grand Valley** that provi
 Run the main interactive menu:
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Valley-of-Tempo-Testnet/main/resources/valleyofTempo.sh)
+bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main/Tempo/resources/valleyofTempo.sh)
 ```
+
+https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/Tempo/resources/valleyofTempo.sh
 
 ## 📦 Features
 

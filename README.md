@@ -32,8 +32,6 @@ Run the main interactive menu:
 bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main/Tempo/resources/valleyofTempo.sh)
 ```
 
-https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/Tempo/resources/valleyofTempo.sh
-
 ## 📦 Features
 
 ### Node Interactions

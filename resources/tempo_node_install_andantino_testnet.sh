@@ -64,8 +64,8 @@ source $HOME/.bash_profile
 if [[ "$SETUP_UFW" =~ ^[Yy]$ ]]; then
     sudo apt install -y ufw
     sudo ufw allow 22/tcp comment "SSH Access"
-    sudo ufw allow ${TEMPO_PORT}303/tcp comment 'Tempo P2P'
-    sudo ufw allow ${TEMPO_PORT}303/udp comment 'Tempo discovery'
+    sudo ufw allow ${TEMPO_PORT}303/tcp comment 'Tempo Testnet P2P'
+    sudo ufw allow ${TEMPO_PORT}303/udp comment 'Tempo Testnet discovery'
     sudo ufw --force enable
     sudo ufw status verbose
 fi

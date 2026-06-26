@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "network": "tempo-moderato-testnet",
+  "human_name": "Valley of Tempo - Moderato Testnet",
+  "last_updated": "2026-06-27",
+  "source_of_truth": "github.com/hubofvalley/Valley-of-Tempo-Testnet (resources/*.sh)",
+  "verification_status": "needs_live_verification",
+  "verification_note": "Initial gv-ops contract seeded from the Valley Tempo testnet scripts and README. Live service state, binary version, and sync data still need server-side validation.",
+  "chain": {
+    "chain_spec": "testnet",
+    "chain_id": "42431",
+    "chain_name": "Moderato",
+    "evm_default_rpc_port": 30545,
+    "evm_default_ws_port": 30546,
+    "authrpc_default_port": 30551,
+    "metrics_default_port": 30900,
+    "p2p_default_port": 30303
+  },
+  "components": {
+    "validator": {
+      "name": "tempo-moderato-node",
+      "role": "validator",
+      "version_model": "direct_component_versions",
+      "version_note": "Tempo uses a direct binary target version. gv-ops compares the live tempo binary against the current Tempo target version.",
+      "execution": {
+        "binary": "tempo",
+        "version_current": "v1.0.0-rc.1",
+        "release_source": "https://tempo.xyz/install",
+        "install_source": "resources/tempo_node_install_moderato_testnet.sh",
+        "update_source": "resources/moderato_network_upgrade.sh",
+        "needs_live_verification": true
+      },
+      "services": {
+        "execution": "tempo"
+      },
+      "home_dir": "$HOME/.tempo",
+      "data_dir": "$HOME/.tempo/data",
+      "binary_install_dir": "$HOME/.tempo/bin",
+      "install_script": "resources/tempo_node_install_moderato_testnet.sh",
+      "update_script": "resources/moderato_network_upgrade.sh",
+      "env_overrides": {
+        "TEMPO_CHAIN_ID": "42431",
+        "TEMPO_HOME": "$HOME/.tempo",
+        "TEMPO_PORT": "30"
+      }
+    }
+  },
+  "endpoints": {
+    "public_provider": "Grand Valley",
+    "evm_rpc": "https://lightnode-json-rpc-tempo.grandvalleys.com",
+    "evm_websocket": "wss://lightnode-wss-tempo.grandvalleys.com",
+    "enode": "enode://74d4820ebbab1b05349fb836d8de59558222ccb1ae12e1b270eb69f758829cd1e6c82735a4adc6960e5069b0893c929a157c407d8f3f9ea277892a7d15d2e64f@enode-tempo.grandvalleys.com:27303"
+  },
+  "scripts": {
+    "install_validator": "resources/tempo_node_install_moderato_testnet.sh",
+    "migrate_moderato": "resources/moderato_network_upgrade.sh",
+    "menu": "resources/valleyofTempo.sh"
+  },
+  "docs": {
+    "validator": "docs/node-guide.md",
+    "snapshots": "docs/snapshots.md"
+  }
+}

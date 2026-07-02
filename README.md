@@ -70,7 +70,10 @@ bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main
 
 ## 📖 Documentation
 
-For detailed documentation, see the [docs/](docs/) folder.
+For detailed documentation, see the [docs/](docs/) folder:
+
+- [Usage guide](docs/usage.md) - menu navigation, option reference, safety notes.
+- [Node guide](docs/node-guide.md) - manual node setup and operations.
 
 ## 🔗 Links
 

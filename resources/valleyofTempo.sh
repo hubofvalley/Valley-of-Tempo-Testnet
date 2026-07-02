@@ -182,7 +182,7 @@ function show_node_status() {
 
     # Add explanation for negative values
     if (( block_difference < 0 )); then
-        echo -e "${GREEN}Note:${RESET} A negative value is normal - this means Story's official RPC block height is currently behind your node's height"
+        echo -e "${GREEN}Note:${RESET} A negative value is normal - this means Tempo's official RPC block height is currently behind your node's height"
     fi
     echo -e "${YELLOW}Press Enter to go back to Valley of Tempo main menu${RESET}"
     read -r

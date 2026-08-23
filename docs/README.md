@@ -2,14 +2,14 @@
 
 Documentation for the Valley of Tempo Testnet toolkit (Moderato chain).
 
-## 📚 Documentation
+## Documentation
 
 | Document | Description |
 |----------|-------------|
 | [node-guide.md](node-guide.md) | Tempo node deployment and management |
 | [snapshots.md](snapshots.md) | Snapshot application guide |
 
-## 🚀 Quick Navigation
+## Common tasks
 
 | I want to... | Go to |
 |--------------|-------|
@@ -18,7 +18,7 @@ Documentation for the Valley of Tempo Testnet toolkit (Moderato chain).
 | Add trusted peers | [node-guide.md#adding-peers](node-guide.md#adding-peers) |
 | Migrate from Andantino | [node-guide.md#network-migration](node-guide.md#network-migration) |
 
-## 🔧 Current Versions
+## Current Versions
 
 | Component | Version |
 |-----------|---------|
@@ -26,7 +26,7 @@ Documentation for the Valley of Tempo Testnet toolkit (Moderato chain).
 | Chain | Moderato |
 | Chain ID | 42431 |
 
-## ❓ Need Help?
+## Support
 
 - Open an issue on [GitHub](https://github.com/hubofvalley/Valley-of-Tempo-Testnet/issues)
 - Email: letsbuidltogether@grandvalleys.com

@@ -1,7 +1,7 @@
 <h1 align="center">Valley of Tempo Testnet</h1>
 
 <p align="center">
-  <strong>A comprehensive toolkit for deploying and managing Tempo nodes on Moderato testnet</strong>
+  <strong>Toolkit for deploying and managing Tempo nodes on Moderato testnet</strong>
 </p>
 
 <p align="center">
@@ -11,11 +11,11 @@
 
 ---
 
-## 🚀 Overview
+## Overview
 
 Valley of Tempo Testnet is an open-source project by **Grand Valley** that provides automated scripts for deploying and managing Tempo nodes on the **Moderato testnet**.
 
-## 📋 System Requirements
+## System Requirements
 
 | Category | Requirements |
 |----------|--------------|
@@ -24,7 +24,7 @@ Valley of Tempo Testnet is an open-source project by **Grand Valley** that provi
 | Storage | 500+ GB NVMe SSD |
 | Bandwidth | 1 GBit/s |
 
-## ⚡ Quick Start
+## Getting started
 
 Run the main interactive menu:
 
@@ -32,7 +32,7 @@ Run the main interactive menu:
 bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main/Tempo/resources/valleyofTempo.sh)
 ```
 
-## 📦 Features
+## Features
 
 ### Node Interactions
 - Deploy/re-deploy Tempo node
@@ -46,7 +46,7 @@ bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main
 - Restart/stop node
 - Delete node
 
-## 🔧 Current Versions
+## Current Versions
 
 | Component | Version |
 |-----------|---------|
@@ -54,7 +54,7 @@ bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main
 | Chain | Moderato |
 | Chain ID | 42431 |
 
-## 🌐 Grand Valley Public Endpoints
+## Grand Valley Public Endpoints
 
 | Type | URL |
 |------|-----|
@@ -62,20 +62,20 @@ bash <(curl -s https://raw.githubusercontent.com/hubofvalley/Testnet-Guides/main
 | EVM WebSocket | `wss://lightnode-wss-tempo.grandvalleys.com` |
 | Enode | `enode://74d4820ebbab1b05349fb836d8de59558222ccb1ae12e1b270eb69f758829cd1e6c82735a4adc6960e5069b0893c929a157c407d8f3f9ea277892a7d15d2e64f@enode-tempo.grandvalleys.com:27303` |
 
-## 🔐 Privacy & Security
+## Privacy & Security
 
 - **No external data storage** - All operations run locally
 - **No phishing links** - All URLs are for legitimate Tempo operations
 - **Open source** - Full audit trail available
 
-## 📖 Documentation
+## Documentation
 
 For detailed documentation, see the [docs/](docs/) folder:
 
 - [Usage guide](docs/usage.md) - menu navigation, option reference, safety notes.
 - [Node guide](docs/node-guide.md) - manual node setup and operations.
 
-## 🔗 Links
+## Links
 
 **Tempo:**
 - [Website](https://tempo.xyz)
@@ -83,10 +83,10 @@ For detailed documentation, see the [docs/](docs/) folder:
 **Grand Valley:**
 - [GitHub](https://github.com/hubofvalley) | [X/Twitter](https://x.com/bacvalley)
 
-## 📧 Contact
+## Contact
 
 Email: letsbuidltogether@grandvalleys.com
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
